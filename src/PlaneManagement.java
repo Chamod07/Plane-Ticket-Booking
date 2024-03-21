@@ -13,7 +13,12 @@ public class PlaneManagement {
     public static void main(String[] args) {
         initializeSeats();  // Initialize seat arrays for each row (A-D)
 
-        System.out.println("Welcome To The Plane Management Application");
+        // Display a welcome message
+        drawStars();
+        System.out.println("*\t\t\t\t  March 22, 2024 \t\t\t\t *");
+        System.out.println("*\t\tWELCOME TO THE PLANE MANAGEMENT APP\t\t *");
+        System.out.println("*\t ** Developed by Chamod Karunathilake **\t *");
+        System.out.println("*  Manage airplane seats, buy tickets, and more! *");
         displayMenu();  // Display the menu for user interaction
 
         // Loop until user exits
@@ -42,7 +47,7 @@ public class PlaneManagement {
                     find_first_available();
                     break;
                 case "4":
-                    System.out.println("\t\t\t***** SEATING PLAN *****");
+                    System.out.println("\t\t\t\t ***** SEATING PLAN *****");
                     show_seating_plan();
                     break;
                 case "5":
@@ -277,11 +282,16 @@ public class PlaneManagement {
             System.out.printf("%4d", i);  // Format headers to have 4 spaces between each other
         }
         System.out.println();
+        System.out.print("\t   ");
+        for (int i = 0; i < 27; i++) {
+            System.out.print("_ ");
+        }
+        System.out.println();
 
         // Loop through rows and seats for displaying the plan
         char rowLetter = 'A';
         for (int[] seatRow : seats) {
-            System.out.print(rowLetter+" | ");
+            System.out.print(rowLetter+"  |");
             for (int seatStatus : seatRow) {
                 System.out.print(seatStatus == 0 ? "   O" : "   X");  // Use ternary operator to display O if available and X if taken
             }
