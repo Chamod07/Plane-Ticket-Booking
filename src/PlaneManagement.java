@@ -178,13 +178,15 @@ public class PlaneManagement {
                     break;
                 }
             }
+            // Check if the last element is not empty and print no empty seats were found
+            if (tickets[tickets.length - 1] != null) {
+                System.out.println("Sorry, there are no tickets available for purchase.");
+            }
         }
     }
 
     private static Person getPersonDetails() {
-        String name;
-        String surname;
-        String email;
+        String name, surname, email;
 
         // Get name, surname, email with validation
         do {
@@ -367,13 +369,22 @@ public class PlaneManagement {
     }
 
     private static void searchByUser() {
-        // Search ticket by user details (name, surname, email)
+        // Search ticket by user details (name and surname)
         boolean ticketFound = false;
-        Person person = getPersonDetails();
+        String name, surname;
+        do {
+            System.out.print("Enter your name (at least 3 letters and no numbers): ");
+            name = scanner.next();
+        } while (name.length() < 3 || !name.matches("[a-zA-Z]+"));  // Use regex for name validation. Reference: https://www.w3schools.com/java/java_regex.asp
+        do {
+            System.out.print("Enter your surname (at least 3 letters and no numbers): ");
+            surname = scanner.next();
+        } while (surname.length() < 3 || !surname.matches("[a-zA-Z]+"));  // Use regex for surname validation. Reference: https://www.w3schools.com/java/java_regex.asp
+
         for (Ticket ticket : tickets) {
             if (ticket != null)
-                // Individually check for person details using Getters from Person class
-                if (Objects.equals(ticket.getPerson().getName(), person.getName()) && Objects.equals(ticket.getPerson().getSurname(), person.getSurname()) && Objects.equals(ticket.getPerson().getEmail(), person.getEmail())) {
+                // Individually check for person details using Getters
+                if (Objects.equals(ticket.getPerson().getName(), name) && Objects.equals(ticket.getPerson().getSurname(), surname)) {
                     ticket.printTicketDetails();
                     ticketFound = true;
                     break;
