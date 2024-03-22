@@ -3,12 +3,14 @@ public class Person {
     private String surname;
     private String email;
 
+    // Constructor to initialize Person object
     public Person(String name, String surname, String email) {
         this.name = name;
         this.surname = surname;
         this.email = email;
     }
 
+    // Getters and Setters for Person object
     public String getName() {
         return name;
     }
@@ -33,6 +35,7 @@ public class Person {
         this.email = email;
     }
 
+    // Method to return person details
     public String printPersonDetails() {
         return String.format("%s %s (%s)", getName(), getSurname(), getEmail());  // code taken from https://stackoverflow.com/questions/7278128/formatting-string-in-java-using-return-string-format
     }
