@@ -27,8 +27,8 @@ public class PlaneManagement {
             drawStars();
             // Prompt user for menu selection
             System.out.print("Please select an option from the menu: ");
-            String Option = scanner.next();
-            switch (Option) {
+            String option = scanner.next();
+            switch (option) {
                 case "0":
                     System.out.println("\t\t\t***** EXIT APP *****");
                     System.out.println("Thank You for using the application\nHave a safe flight!");
@@ -123,7 +123,9 @@ public class PlaneManagement {
                 // Check if seat number is within valid range for specific row
                 if (seatNumber < 1 || (rowIndex == 0 || rowIndex == 3) && seatNumber > seats[0].length || (rowIndex == 1 || rowIndex == 2) && seatNumber > seats[1].length) {
                     System.out.println("Seat number is out of range.");
-                } else correctSeat = true;  // Exit the loop if seat number is valid
+                } else {
+                    correctSeat = true;  // Exit the loop if seat number is valid
+                }
             } catch (InputMismatchException e) {
                 System.out.println("Seat number should be an integer. Please try again.");
                 scanner.nextLine();  // clear the scanner buffer after exception
@@ -172,19 +174,11 @@ public class PlaneManagement {
                     seats[rowIndex][seatIndex] = 1;
                     System.out.println("Seat " + rowLetter + seatNumber + " successfully purchased!");
                     ticket.save(person);  // Save ticket details to a file
+                    printTicketAfterSale(ticket);  // Asks user to print the ticket details once purchased
                     break;
                 }
             }
         }
-    }
-
-    private static void buyAnotherSeat() {
-        char answer;
-        do {
-            System.out.print("This seat is already sold. Would you like to search for another seat (Y/N)? ");
-            answer = scanner.next().toUpperCase().charAt(0);
-        } while (answer != 'Y' && answer != 'N');
-        if (answer == 'Y') buy_seat();  // If user enters Y, buy_seat method is called again
     }
 
     private static Person getPersonDetails() {
@@ -194,13 +188,13 @@ public class PlaneManagement {
 
         // Get name, surname, email with validation
         do {
-            System.out.print("Enter your name (should contain at least 3 letters): ");
+            System.out.print("Enter your name (at least 3 letters and no numbers): ");
             name = scanner.next();
-        } while (name.length() < 3);
+        } while (name.length() < 3 || !name.matches("[a-zA-Z]+"));  // Use regex for name validation. Reference: https://www.w3schools.com/java/java_regex.asp
         do {
-            System.out.print("Enter your surname (should contain at least 3 letters): ");
+            System.out.print("Enter your surname (at least 3 letters and no numbers): ");
             surname = scanner.next();
-        } while (surname.length() < 3);
+        } while (surname.length() < 3 || !surname.matches("[a-zA-Z]+"));  // Use regex for surname validation. Reference: https://www.w3schools.com/java/java_regex.asp
         do {
             System.out.print("Enter your email (should contain '@' and '.'): ");
             email = scanner.next();
@@ -222,6 +216,28 @@ public class PlaneManagement {
         }
     }
 
+    private static void buyAnotherSeat() {
+        String answer;
+        do {
+            System.out.print("This seat is already sold. Would you like to search for another seat (Y/N)? ");
+            answer = scanner.next().toUpperCase();
+        } while (!answer.equals("Y") && !answer.equals("N"));
+        if (answer.equals("Y")) {
+            buy_seat();  // If user enters Y, buy_seat method is called again
+        }
+    }
+
+    private static void printTicketAfterSale(Ticket ticket) {
+        String answer;
+        do {
+            System.out.print("Do you want to print the ticket (Y/N)? ");
+            answer = scanner.next().toUpperCase();
+        } while (!answer.equals("Y") && !answer.equals("N"));
+        if (answer.equals("Y")) {
+            ticket.printTicketDetails();  // If user enters Y, print the ticket details
+        }
+    }
+
     private static void cancel_seat() {
         // Get valid seat selection from user
         int[] seatDetails = getValidSeat();
@@ -233,10 +249,8 @@ public class PlaneManagement {
         // Check if seat is already available
         if (seats[rowIndex][seatIndex] == 0) {
             System.out.println("This seat is already available.");
-        } else {
-            // Confirm cancellation with user
-            if (cancelSeatConfirmation(seatDetails)) {
-                // Find the ticket and cancel
+        } else if (cancelSeatConfirmation(seatDetails)) {  // Confirm cancellation with user
+                // Find the ticket and cancel it
                 for (int i = 0; i < tickets.length; i++) {
                     if ((tickets[i] != null) && (tickets[i].getRow() == seatDetails[0]) && (tickets[i].getSeat() == seatDetails[1])) {
                         tickets[i].deleteTicketFile();
@@ -248,17 +262,16 @@ public class PlaneManagement {
                 }
                 System.out.println("No matching ticket found."); // Inform if no ticket found
             }
-        }
     }
 
     private static boolean cancelSeatConfirmation(int[] seatDetails) {
-        char answer;
+        String answer;
         do {
             System.out.print("Are you sure you want to cancel seat " + (char) seatDetails[0] + seatDetails[1] + "? (Y/N) ");
-            answer = scanner.next().toUpperCase().charAt(0); // Get single character for confirmation
-        } while (answer != 'Y' && answer != 'N');  // Loop until valid input (Y or N)
+            answer = scanner.next().toUpperCase(); // Get uppercase character for confirmation
+        } while (!answer.equals("Y") && !answer.equals("N"));  // Loop until valid input (Y or N)
 
-        return answer == 'Y';
+        return answer.equals("Y");
     }
 
     private static void find_first_available() {
@@ -271,7 +284,6 @@ public class PlaneManagement {
                 }
             }
         }
-
         System.out.println("No seats available.");
     }
 
@@ -360,6 +372,7 @@ public class PlaneManagement {
         Person person = getPersonDetails();
         for (Ticket ticket : tickets) {
             if (ticket != null)
+                // Individually check for person details using Getters from Person class
                 if (Objects.equals(ticket.getPerson().getName(), person.getName()) && Objects.equals(ticket.getPerson().getSurname(), person.getSurname()) && Objects.equals(ticket.getPerson().getEmail(), person.getEmail())) {
                     ticket.printTicketDetails();
                     ticketFound = true;
